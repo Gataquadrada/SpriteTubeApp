@@ -51,7 +51,7 @@
         })
         $("#button_save").click(function () {
           fs.writeFile(
-            "config/port.txt",
+            "./config/port.txt",
             $("#input_port").val() || 3000,
             (err) => {
               alert("Saved!")

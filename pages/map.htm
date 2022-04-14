@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Mapping character - Maze's SpriteTube</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="./socket.io/socket.io.js"></script>
+    <script src="resources/jquery-3.6.0.min.js"></script>
+    <script src="resources/jquery-ui-1.13.1.custom/jquery-ui.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="resources/jquery-ui-1.13.1.custom/jquery-ui.min.css"
+    />
+    <link href="resources/map.css" rel="stylesheet" />
+    <script src="resources/map.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
+  </head>
+  <body class="editing">
+    <div id="container_load">
+      <button type="button">
+        Load image
+        <input type="file" class="action_sheet_upload" accept=".png" />
+      </button>
+    </div>
+    <div id="container_edit">
+      <div id="spritesheet_main" class="spritesheet">
+        <img src="assets/character.png" />
+      </div>
+      <div class="overlay"></div>
+      <div id="resize_box">
+        <div id="spritesheet_boxed" class="spritesheet">
+          <img src="assets/character.png" />
+        </div>
+        <div id="snapshot_box" data-group="snapshot"></div>
+      </div>
+      <div id="timeline" class="open"></div>
+      <div id="controls">
+        <button id="action_preview" type="button" class="button">
+          <i class="material-icons">account_box</i>
+          <span>Preview</span>
+        </button>
+        <button
+          id="action_frame_add"
+          type="button"
+          class="button open"
+          data-group="frame-edit"
+          data-default="1"
+        >
+          <i class="material-icons">camera_alt</i>
+          <span>Add frame</span>
+        </button>
+        <button
+          id="action_frame_update"
+          type="button"
+          class="button"
+          data-group="frame-edit"
+        >
+          <i class="material-icons">camera_alt</i>
+          <span>Update frame</span>
+        </button>
+        <div class="button-group">
+          <button
+            id="action_icon_download"
+            type="button"
+            class="button danger"
+            data-group="snapshot"
+          >
+            <i class="material-icons">file_download</i>
+          </button>
+          <button id="action_frame_icon" type="button" class="button">
+            <i class="material-icons">person_pin</i>
+            <span>Make icon</span>
+          </button>
+        </div>
+        <button id="action_timeline_toggle" type="button" class="button">
+          <i class="material-icons">burst_mode</i> <span>Timeline</span>
+        </button>
+        <button type="button" class="button">
+          <i class="material-icons">cloud_upload</i> <span>Upload</span>
+          <input type="file" class="action_sheet_upload" accept=".png" />
+        </button>
+        <button id="action_timeline_save" type="button" class="button">
+          <i class="material-icons">save</i> <span>Save</span>
+        </button>
+      </div>
+      <div id="preview">
+        <div id="preview_handle"><i class="material-icons">menu</i></div>
+        <iframe src="http://127.0.0.1:3000/" frameborder="0"></iframe>
+      </div>
+    </div>
+  </body>
+</html>

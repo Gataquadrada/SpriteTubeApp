@@ -9,7 +9,10 @@ ipcMain.on("config-port", (event, arg) => {
   _PORT = 3000
 
   try {
-    const port = fs.readFileSync("./config/port.txt", "utf8")
+    const port = fs.readFileSync(
+      path.join(__dirname, "config", "port.txt"),
+      "utf8"
+    )
     _PORT = port
   } catch (err) {
     console.error(err)

@@ -1,0 +1,300 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+}
+* {
+  box-sizing: border-box;
+  user-select: none;
+}
+#container_load {
+  align-items: center;
+  background: #18191b;
+  display: none;
+  inset: 0;
+  justify-content: center;
+  position: fixed;
+  z-index: 999;
+}
+#container_edit {
+  background: #18191b;
+  display: block;
+  inset: 0;
+  position: fixed;
+  z-index: 1;
+}
+body:not(.editing) #container_load {
+  display: flex;
+}
+
+#container_load button {
+  position: relative;
+}
+#container_load button > input[type="file"] {
+  cursor: pointer;
+  height: 100%;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+#container_load > button {
+  background: #176e6d;
+  border: 1px solid #053938;
+  border-radius: 3px;
+  color: #fff;
+  cursor: pointer;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  padding: 1rem 2rem;
+}
+
+#container_edit .overlay {
+  background: rgba(45, 45, 45, 0.5);
+  inset: 0;
+  pointer-events: none;
+  position: fixed;
+  z-index: 4;
+}
+.spritesheet {
+  left: 0;
+  cursor: move;
+  position: fixed;
+  top: 0;
+  z-index: 3;
+}
+#spritesheet_boxed {
+  pointer-events: none;
+}
+
+#resize_box {
+  border: 1px dashed #fff;
+  height: 200px;
+  left: 50% !important;
+  overflow: hidden;
+  position: fixed;
+  top: 50% !important;
+  transform: translate(-50%, -50%);
+  width: 200px;
+  z-index: 5;
+}
+#snapshot_box {
+  background: rgba(206, 40, 40, 0.5);
+  border: 1px dashed rgb(206, 40, 40);
+  cursor: move;
+  height: 100px;
+  left: 0;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  width: 100px;
+  z-index: 5;
+}
+
+#timeline {
+  background: #448488;
+  border-radius: 0 3px 3px 0;
+  display: none;
+  height: 100%;
+  left: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0 0.5rem 0.5rem 0.5rem;
+  position: fixed;
+  top: 0;
+  width: 200px;
+  z-index: 6;
+}
+#timeline.open {
+  display: block;
+}
+#timeline > .item {
+  border: 1px solid #053938;
+  border-radius: 3px;
+  cursor: move;
+  font-size: 0;
+  margin-top: 0.5rem;
+  position: relative;
+}
+#timeline > .item.editing {
+  border-color: #9b0000;
+}
+#timeline > .item > img {
+  border-radius: 3px;
+  width: 100%;
+}
+#timeline > .item > .number {
+  background: #448488;
+  border: 0;
+  border-radius: 0 3px 0 2px;
+  bottom: 0;
+  color: #fff;
+  cursor: pointer;
+  display: block;
+  font-size: 1rem;
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+  left: 0;
+  padding: 3px 6px;
+  position: absolute;
+}
+#timeline > .item.editing > .number {
+  background: #9b0000;
+}
+#timeline > .item > .delete {
+  background: rgb(210, 26, 26, 0.5);
+  border: 0;
+  border-bottom: 1px solid #053938;
+  border-radius: 3px 0 0 0;
+  color: #fff;
+  cursor: pointer;
+  display: none;
+  height: 2.25rem;
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 50%;
+}
+#timeline > .item > .edit,
+#timeline > .item > .cancel {
+  background: rgba(26, 210, 207, 0.5);
+  border: 0;
+  border-bottom: 1px solid #053938;
+  border-radius: 0 3px 0 0;
+  color: #fff;
+  cursor: pointer;
+  display: none;
+  height: 2.25rem;
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 50%;
+}
+#timeline > .item > .cancel {
+  background: rgba(170, 210, 26, 0.5);
+}
+#timeline > .item > .delete > i,
+#timeline > .item > .edit > i,
+#timeline > .item > .cancel > i {
+  font-size: 1.5rem;
+}
+#timeline > .item:hover > .delete,
+#timeline > .item:not(.editing):hover > .edit,
+#timeline > .item.editing > .delete,
+#timeline > .item.editing > .cancel {
+  display: block;
+}
+#timeline > .item.editing > .delete,
+#timeline > .item.editing > .edit,
+#timeline > .item.editing > .cancel {
+  border-color: #9b0000;
+}
+
+#controls {
+  align-items: flex-end;
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  z-index: 7;
+}
+#controls .button {
+  background: #448488;
+  border: 1px solid #053938;
+  color: #fafafa;
+  cursor: pointer;
+  display: block;
+  font-size: 0.9rem;
+  text-align: left;
+  padding: 0.4rem 0.5rem;
+  position: relative;
+  width: 125px;
+}
+#controls .button.danger {
+  background: #ad1010;
+  border-color: #540b0b;
+}
+#controls .button:hover {
+  background: #053938;
+}
+#controls .button:disabled {
+  background: #448488;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+#controls .button:first-child {
+  border-radius: 3px 3px 0px 0px;
+}
+#controls .button:last-child {
+  border-radius: 0px 0px 3px 3px;
+}
+#controls .button > i {
+  font-size: 1rem;
+  float: left;
+  margin-right: 0.15rem;
+}
+#controls .button > input[type="file"] {
+  cursor: pointer;
+  height: 100%;
+  left: 0;
+  opacity: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+#controls .button-group {
+  display: flex;
+}
+#controls .button-group > .button {
+  border-radius: 0;
+  width: unset;
+}
+#controls .button-group:not(:first-child) > .button:first-child {
+  border-radius: 3px 0 0 3px;
+}
+#controls .button-group > .button:last-child {
+  width: 125px;
+}
+
+#preview {
+  background: rgb(0, 255, 0);
+  border-radius: 3px;
+  display: none;
+  height: 200px;
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 200px;
+  z-index: 8;
+}
+#preview.open {
+  display: block;
+}
+#preview > #preview_handle {
+  align-items: center;
+  background: #666666;
+  border-radius: 3px 3px 0 0;
+  color: #fff;
+  cursor: move;
+  display: flex;
+  height: 20px;
+  left: 0;
+  padding: 0 0 0 5px;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+#preview > #preview_handle > i {
+  font-size: 15px;
+}
+#preview > iframe {
+  position: absolute;
+  height: calc(100% - 20px);
+  left: 0;
+  top: 20px;
+  width: 100%;
+}
+
+[data-group]:not(.open) {
+  display: none !important;
+}
