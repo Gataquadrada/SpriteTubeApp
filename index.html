@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Maze's SpriteTube</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; frame-src http://localhost:*"
+    />
+    <link href="./assets/styles.css" rel="stylesheet" />
+    <script>
+      const { app, ipcRenderer, clipboard, shell } = require("electron")
+      _PORT = ipcRenderer.sendSync("config-port", "")
+
+      const fs = require("fs")
+
+      const $ = require("jquery")
+
+      const _EDITOR_URL = `http://localhost:${_PORT}/map`
+      const _PLAYER_URL = `http://localhost:${_PORT}/`
+
+      $(document).ready(() => {
+        const iframe = $("<iframe/>", {
+          id: "app_iframe",
+          frameborder: "0",
+        })
+
+        iframe.prop("src", _EDITOR_URL)
+        iframe.appendTo($("body"))
+
+        $("#input_url").val(_PLAYER_URL)
+
+        $("#input_port").val(_PORT)
+
+        $("#button_editor").click(function () {
+          iframe.prop("src", _EDITOR_URL)
+        })
+
+        $("#button_player").click(function () {
+          iframe.prop("src", _PLAYER_URL)
+        })
+
+        $("#button_url").click(function () {
+          shell.openExternal(_PLAYER_URL)
+        })
+
+        $("#button_copy").click(function () {
+          clipboard.writeText(_PLAYER_URL)
+          alert("Copied!")
+        })
+        $("#button_save").click(function () {
+          fs.writeFile(
+            "config/port.txt",
+            $("#input_port").val() || 3000,
+            (err) => {
+              alert("Saved!")
+              ipcRenderer.sendSync("app-reboot", "")
+            }
+          )
+        })
+      })
+    </script>
+  </head>
+  <body>
+    <div id="app_toolbar">
+      <button id="button_editor" type="button" class="button left">
+        Editor
+      </button>
+      <input id="input_url" type="text" class="input" readonly />
+      <button id="button_copy" type="button" class="button">Copy</button>
+      <button id="button_url" type="button" class="button">Go</button>
+      <input
+        id="input_port"
+        type="text"
+        class="input"
+        style="width: 70px; text-align: center"
+      />
+      <button id="button_save" type="button" class="button">Save</button>
+      <button id="button_player" type="button" class="button right">
+        Player
+      </button>
+    </div>
+    <script src="./renderer.js"></script>
+  </body>
+</html>

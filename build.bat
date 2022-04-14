@@ -1,0 +1,1 @@
+npx electron-packager . SpriteTube --overwrite --asar --electron-version=13.4.0 --platform=win32 --arch=x64 --out=out --prune=true --icon=./assets/spritetube-icon.ico
