@@ -251,8 +251,8 @@ jQuery(($) => {
 
       fReader.onload = function (e) {
         spritesheetFile = e.target.result
-        spritesheetMain.prop("src", spritesheetFile)
-        spritesheetBoxed.prop("src", spritesheetFile)
+        spritesheetMain.find("img").prop("src", spritesheetFile)
+        spritesheetBoxed.find("img").prop("src", spritesheetFile)
         timeline.empty()
         resizeBox.mazeResize("200px", "200px")
         spritesheetMain.mazeReposition(0, 0)
