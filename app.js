@@ -75,16 +75,16 @@ app.post("/map", (req, res) => {
       "0" + d.getDate()
     ).slice(-2)}`
 
-    if (!fs.existsSync(__dirname + `/backups/${date}-frames.json`)) {
+    if (!fs.existsSync(`./backups/${date}-frames.json`)) {
       fs.copyFile(
         "./assets/frames.json",
-        __dirname + `/backups/${date}-frames.json`,
+        `./backups/${date}-frames.json`,
         (err) => {}
       )
 
       fs.copyFile(
         "./assets/character.png",
-        __dirname + `/backups/${date}-character.png`,
+        `./backups/${date}-character.png`,
         (err) => {}
       )
     }
