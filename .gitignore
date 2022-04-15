@@ -1,3 +1,4 @@
 node_modules
 backups
 out
+copy*.bat

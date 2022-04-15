@@ -10,10 +10,6 @@ jQuery(($) => {
   const timeline = $("#timeline")
   const preview = $("#preview")
 
-  socket.on("server-port", function (port) {
-    $("#preview_iframe").prop("src", `http://localhost:${port}/`)
-  })
-
   spritesheetMain.mazeReposition = function (X, Y, calc = true) {
     $(this)
       .css({
@@ -75,6 +71,9 @@ jQuery(($) => {
         </button>
         <button type="button" class="cancel action_frame_cancel">
           <i class="material-icons">cancel</i>
+        </button>
+        <button type="button" class="info action_frame_info">
+          <i class="material-icons">info_outline</i>
         </button>
       </div>`)
 
@@ -238,6 +237,22 @@ jQuery(($) => {
     $("[data-group='frame-edit']").toggleClass("open")
   })
 
+  $(document).on("click", ".action_frame_info", function (e) {
+    e.stopImmediatePropagation()
+    const item = $(this).parent(".item")
+    const boxW = parseInt(item.data("box-width"))
+    const boxH = parseInt(item.data("box-height"))
+    const boxX = item.data("box-x")
+    const boxY = item.data("box-y")
+    const movedX = parseInt(item.data("moved-x"))
+    const movedY = parseInt(item.data("moved-y"))
+    alert(
+      `Width: ${boxW}px | Height: ${boxH}px | X: ${
+        (boxX - movedX) * -1
+      }px | Y: ${(boxY - movedY) * -1}px`
+    )
+  })
+
   $(document).on("click", ".action_frame_cancel", function (e) {
     e.stopImmediatePropagation()
     timeline.mazeEditCancel()
@@ -299,6 +314,9 @@ jQuery(($) => {
         spritesheet: spritesheetFile || null,
       },
       dataType: "JSON",
+      complete: function () {
+        spritesheetFile = null
+      },
       beforeSend: function () {
         button.prop("disabled", true)
       },
@@ -321,10 +339,10 @@ jQuery(($) => {
   })
 
   $.ajax({
-    url: "assets/character.png",
+    url: "./character.png",
     success: function () {
       $.getJSON(
-        "assets/frames.json",
+        "./character.json",
         function (data) {
           $.each(data.frames, function (i, frame) {
             const frameW = frame.w.replace("px", "") * 1

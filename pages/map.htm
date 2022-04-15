@@ -4,6 +4,10 @@
     <title>Mapping character - Maze's SpriteTube</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      http-equiv="Cache-Control"
+      content="no-cache, no-store, must-revalidate"
+    />
     <script src="./socket.io/socket.io.js"></script>
     <script src="resources/jquery-3.6.0.min.js"></script>
     <script src="resources/jquery-ui-1.13.1.custom/jquery-ui.min.js"></script>
@@ -27,12 +31,12 @@
     </div>
     <div id="container_edit">
       <div id="spritesheet_main" class="spritesheet">
-        <img src="assets/character.png" />
+        <img src="./character.png" />
       </div>
       <div class="overlay"></div>
       <div id="resize_box">
         <div id="spritesheet_boxed" class="spritesheet">
-          <img src="assets/character.png" />
+          <img src="./character.png" />
         </div>
         <div id="snapshot_box" data-group="snapshot"></div>
       </div>
@@ -88,11 +92,7 @@
       </div>
       <div id="preview">
         <div id="preview_handle"><i class="material-icons">menu</i></div>
-        <iframe
-          id="preview_iframe"
-          src="http://127.0.0.1:3000/"
-          frameborder="0"
-        ></iframe>
+        <iframe id="preview_iframe" src="./" frameborder="0"></iframe>
       </div>
     </div>
   </body>

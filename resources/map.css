@@ -169,6 +169,17 @@ body:not(.editing) #container_load {
   top: 0;
   width: 50%;
 }
+#timeline > .item > .info {
+  background: none;
+  border: 0;
+  bottom: 0;
+  color: #756e72;
+  cursor: pointer;
+  display: none;
+  padding: 0 3px;
+  position: absolute;
+  right: 0;
+}
 #timeline > .item > .cancel {
   background: rgba(170, 210, 26, 0.5);
 }
@@ -179,8 +190,10 @@ body:not(.editing) #container_load {
 }
 #timeline > .item:hover > .delete,
 #timeline > .item:not(.editing):hover > .edit,
+#timeline > .item:hover > .info,
 #timeline > .item.editing > .delete,
-#timeline > .item.editing > .cancel {
+#timeline > .item.editing > .cancel,
+#timeline > .item.editing > .info {
   display: block;
 }
 #timeline > .item.editing > .delete,

@@ -6,7 +6,7 @@ const fs = require("fs")
 const { ipcMain } = require("electron")
 
 ipcMain.on("config-port", (event, arg) => {
-  _PORT = 3000
+  var _PORT = 3000
 
   try {
     const port = fs.readFileSync(
@@ -36,7 +36,7 @@ function createWindow() {
       contextIsolation: false,
       preload: path.join(__dirname, "preload.js"),
     },
-    icon: path.join(__dirname, "assets", "spritetube-icon.png"),
+    icon: path.join(__dirname, "assets", "icon.png"),
     autoHideMenuBar: true,
   })
 

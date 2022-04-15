@@ -1,7 +1,7 @@
 {
-  "name": "SpriteTube",
-  "productName": "SpriteTube",
-  "version": "0.0.1",
+  "name": "spritetube",
+  "productName": "spritetube",
+  "version": "0.2.3",
   "description": "A sprite based approach for VTubing.",
   "main": "main.js",
   "scripts": {
@@ -35,7 +35,10 @@
   },
   "config": {
     "forge": {
-      "packagerConfig": {},
+      "packagerConfig": {
+        "icon": "assets/icon.ico",
+        "asar": false
+      },
       "makers": [
         {
           "name": "@electron-forge/maker-squirrel",

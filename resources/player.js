@@ -5,11 +5,11 @@ jQuery(($) => {
   function setFrame(frameNumber) {
     try {
       if ("flip" == frameNumber) {
-        $("#character").addClass("flipped")
+        $("#character").show().addClass("flipped")
         $(window).trigger("resize")
         return null
       } else if ("unflip" == frameNumber) {
-        $("#character").removeClass("flipped")
+        $("#character").show().removeClass("flipped")
         $(window).trigger("resize")
         return null
       } else if ("hide" == frameNumber) {
@@ -31,7 +31,6 @@ jQuery(($) => {
       localStorage.setItem("maze-frame", frameNumber)
 
       $("#character")
-        .show()
         .css({
           "background-position": frame.p,
           width: frame.w,
@@ -41,18 +40,13 @@ jQuery(($) => {
           "frame-width": frame.w,
           "frame-height": frame.h,
         })
+        .show()
 
       $(window).trigger("resize")
     } catch (err) {
       console.log(err)
     }
   }
-
-  socket.on("server-port", function (port) {
-    $("#character").css({
-      "background-image": `url('http://localhost:${port}/assets/character.png')`,
-    })
-  })
 
   socket.on("player-reload", function () {
     console.log("reload")
@@ -63,38 +57,36 @@ jQuery(($) => {
     setFrame(frameNumber)
   })
 
-  $(window)
-    .on("resize", function () {
-      try {
-        const windowW = $(this).width()
-        const windowH = $(this).height()
+  $(window).on("resize", function () {
+    try {
+      const windowW = $(this).width()
+      const windowH = $(this).height()
 
-        const characterW =
-          $("#character").data("frame-width").replace("px", "") * 1
-        const characterH =
-          $("#character").data("frame-height").replace("px", "") * 1
+      const characterW =
+        $("#character").data("frame-width").toString().replace("px", "") * 1
+      const characterH =
+        $("#character").data("frame-height").toString().replace("px", "") * 1
 
-        var ratio = 1
+      var ratio = 1
 
-        if (windowW < characterW) {
-          ratio = windowW / characterW
-        } else if (windowH < characterH) {
-          ratio = windowH / characterH
-        }
-
-        $("#character").css(
-          "transform",
-          `scale(${ratio}) ${
-            $("#character").hasClass("flipped") ? "scaleX(-1)" : ""
-          }`
-        )
-      } catch (err) {
-        console.log(err)
+      if (windowW < characterW) {
+        ratio = windowW / characterW
+      } else if (windowH < characterH) {
+        ratio = windowH / characterH
       }
-    })
-    .trigger("resize")
 
-  $.getJSON("assets/frames.json", function (data) {
+      $("#character").css(
+        "transform",
+        `scale(${ratio}) ${
+          $("#character").hasClass("flipped") ? "scaleX(-1)" : ""
+        }`
+      )
+    } catch (err) {
+      console.log(err)
+    }
+  })
+
+  $.getJSON("./character.json", function (data) {
     frames = data.frames || []
 
     if (1 > frames.length) return null
@@ -107,12 +99,14 @@ jQuery(($) => {
           height: frames[0].h,
         })
         .data({
+          frame: "0",
           "frame-width": frames[0].w,
           "frame-height": frames[0].h,
         })
+        .show()
 
       const prevFrame = localStorage.getItem("maze-frame")
-      if (prevFrame) {
+      if (prevFrame && frames[prevFrame]) {
         setFrame(prevFrame)
       }
 
@@ -120,5 +114,9 @@ jQuery(($) => {
     } catch (err) {
       console.log(err)
     }
+  })
+
+  $("#character").css({
+    "background-image": `url("./character.png?${new Date().getTime()}")`,
   })
 })
