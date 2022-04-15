@@ -10,6 +10,10 @@ jQuery(($) => {
   const timeline = $("#timeline")
   const preview = $("#preview")
 
+  socket.on("server-port", function (port) {
+    $("#preview_iframe").prop("src", `http://localhost:${port}/`)
+  })
+
   spritesheetMain.mazeReposition = function (X, Y, calc = true) {
     $(this)
       .css({

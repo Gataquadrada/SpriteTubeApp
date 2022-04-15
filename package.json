@@ -1,7 +1,7 @@
 {
   "name": "SpriteTube",
   "productName": "SpriteTube",
-  "version": "0.1",
+  "version": "0.0.1",
   "description": "A sprite based approach for VTubing.",
   "main": "main.js",
   "scripts": {

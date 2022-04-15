@@ -32,6 +32,8 @@ try {
 }
 
 io.on("connection", (socket) => {
+  io.to(socket.id).emit("server-port", _PORT)
+
   socket.on("player-reload", function () {
     io.emit("player-reload")
   })
@@ -58,10 +60,14 @@ app.get("/map", (req, res) => {
   res.sendFile(__dirname + "/pages/map.htm")
 })
 
+/* 
+change __dirname + "/
+for "./ 
+*/
 app.post("/map", (req, res) => {
   try {
-    if (!fs.existsSync(__dirname + "/backups")) {
-      fs.mkdirSync(__dirname + "/backups")
+    if (!fs.existsSync("./backups")) {
+      fs.mkdirSync("./backups")
     }
 
     var d = new Date()
@@ -71,13 +77,13 @@ app.post("/map", (req, res) => {
 
     if (!fs.existsSync(__dirname + `/backups/${date}-frames.json`)) {
       fs.copyFile(
-        __dirname + "/assets/frames.json",
+        "./assets/frames.json",
         __dirname + `/backups/${date}-frames.json`,
         (err) => {}
       )
 
       fs.copyFile(
-        __dirname + "/assets/character.png",
+        "./assets/character.png",
         __dirname + `/backups/${date}-character.png`,
         (err) => {}
       )
@@ -93,13 +99,12 @@ app.post("/map", (req, res) => {
     )
 
     fs.writeFile(
-      __dirname + "/assets/character.png",
+      "./assets/character.png",
       spritesheet,
       "base64",
       function (err) {
         if (err) {
           console.error(err)
-          res.send("err")
           return
         }
       }
@@ -107,12 +112,11 @@ app.post("/map", (req, res) => {
   }
 
   fs.writeFile(
-    __dirname + "/assets/frames.json",
+    "./assets/frames.json",
     JSON.stringify({ frames: req.body.frames }),
     (err) => {
       if (err) {
         console.error(err)
-        res.send("err")
         return
       }
     }
