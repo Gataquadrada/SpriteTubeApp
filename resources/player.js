@@ -13,9 +13,11 @@ socket.on("frame", function (frameNumber) {
 function setFrame(frameNumber) {
   if ("flip" == frameNumber) {
     jQuery("#character").addClass("flipped")
+    $(window).resize()
     return null
   } else if ("unflip" == frameNumber) {
     jQuery("#character").removeClass("flipped")
+    $(window).resize()
     return null
   } else if ("hide" == frameNumber) {
     jQuery("#character").hide()
