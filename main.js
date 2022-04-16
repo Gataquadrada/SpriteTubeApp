@@ -1,6 +1,6 @@
 // Modules to control application life and create native browser window
 
-const { app, BrowserWindow } = require("electron")
+const { app, BrowserWindow, Tray, Menu } = require("electron")
 const path = require("path")
 const fs = require("fs")
 const { ipcMain } = require("electron")
@@ -28,6 +28,33 @@ ipcMain.on("app-reboot", (event, arg) => {
 
 function createWindow() {
   // Create the browser window.
+  var tray = new Tray(path.join(__dirname, "assets", "icon.png"))
+
+  tray.setToolTip("SpriteTube")
+
+  tray.on("double-click", function () {
+    mainWindow.show()
+    mainWindow.maximize()
+  })
+
+  tray.setContextMenu(
+    Menu.buildFromTemplate([
+      {
+        label: "Show App",
+        click: function () {
+          mainWindow.show()
+          mainWindow.maximize()
+        },
+      },
+      {
+        label: "Quit",
+        click: function () {
+          app.quit()
+        },
+      },
+    ])
+  )
+
   const mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
@@ -40,10 +67,23 @@ function createWindow() {
     autoHideMenuBar: true,
   })
 
+  mainWindow.on("minimize", function (event) {
+    event.preventDefault()
+    mainWindow.hide()
+  })
+
   // and load the index.html of the app.
   mainWindow.loadFile("index.html")
   // mainWindow.loadURL(`http://127.0.0.1:${_PORT}/`)
   mainWindow.maximize()
+
+  // mainWindow.on("close", function (event) {
+  //   if (!application.isQuiting) {
+  //     event.preventDefault()
+  //     mainWindow.hide()
+  //   }
+  //   return false
+  // })
 
   // Open the DevTools.
   // mainWindow.webContents.openDevTools()
