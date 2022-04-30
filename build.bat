@@ -1,1 +1,1 @@
-npx electron-packager . spritetube --overwrite --asar=false --platform=win32 --arch=x64 --out=out --prune=true --icon=assets/icon.png
+npm run make

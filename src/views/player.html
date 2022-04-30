@@ -8,14 +8,14 @@
       http-equiv="Cache-Control"
       content="no-cache, no-store, must-revalidate"
     />
-    <script src="./socket.io/socket.io.js"></script>
+    <script>
+      const _PORT = ${port}
+    </script>
     <script src="./resources/jquery-3.6.0.min.js"></script>
     <link href="./resources/player.css" rel="stylesheet" />
     <script src="./resources/player.js"></script>
   </head>
   <body>
-    <div id="character_container">
-      <div id="character"></div>
-    </div>
+    <div id="character"></div>
   </body>
 </html>

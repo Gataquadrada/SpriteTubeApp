@@ -1,49 +1,32 @@
 {
   "name": "spritetube",
   "productName": "spritetube",
-  "version": "0.2.4",
-  "description": "A sprite based approach for VTubing.",
-  "main": "main.js",
+  "version": "0.4.0",
+  "description": "My Electron application description",
+  "main": "src/main.js",
   "scripts": {
     "start": "electron-forge start",
     "package": "electron-forge package",
-    "make": "electron-forge make"
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "echo \"No linting configured\""
   },
-  "repository": "https://github.com/Mazeakin/SpriteTube/",
-  "keywords": [
-    "Electron",
-    "Mazeakin",
-    "Sprite",
-    "Tube"
-  ],
-  "author": "Mazeakin",
-  "license": "CC-BY-4.0",
-  "devDependencies": {
-    "@electron-forge/cli": "^6.0.0-beta.63",
-    "@electron-forge/maker-deb": "^6.0.0-beta.63",
-    "@electron-forge/maker-rpm": "^6.0.0-beta.63",
-    "@electron-forge/maker-squirrel": "^6.0.0-beta.63",
-    "@electron-forge/maker-zip": "^6.0.0-beta.63",
-    "electron": "^18.0.3"
+  "keywords": [],
+  "author": {
+    "name": "Mazeakin",
+    "email": "rbarretos7@gmail.com"
   },
-  "dependencies": {
-    "electron-squirrel-startup": "^1.0.0",
-    "express": "^4.17.3",
-    "jquery": "^3.6.0",
-    "socket.io": "^4.4.1",
-    "ws": "^8.5.0"
-  },
+  "license": "MIT",
   "config": {
     "forge": {
       "packagerConfig": {
-        "icon": "assets/icon.ico",
         "asar": false
       },
       "makers": [
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "SpriteTube"
+            "name": "spritetube_win"
           }
         },
         {
@@ -62,5 +45,21 @@
         }
       ]
     }
+  },
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.0",
+    "express": "^4.18.1",
+    "express-es6-template-engine": "^2.2.3",
+    "jquery": "^3.6.0",
+    "skia-canvas": "^0.9.29",
+    "ws": "^8.5.0"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^6.0.0-beta.63",
+    "@electron-forge/maker-deb": "^6.0.0-beta.63",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.63",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.63",
+    "@electron-forge/maker-zip": "^6.0.0-beta.63",
+    "electron": "18.2.0"
   }
 }

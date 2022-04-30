@@ -2,7 +2,6 @@ jQuery(($) => {
   var spritesheetFile = null
   var frameEditing = null
 
-  const socket = io()
   const spritesheetMain = $("#spritesheet_main")
   const spritesheetBoxed = $("#spritesheet_boxed")
   const resizeBox = $("#resize_box")
@@ -77,7 +76,7 @@ jQuery(($) => {
         </button>
       </div>`)
 
-      timeline.append(item)
+      timeline.append(item).scrollTop(timeline[0].scrollHeight + 500)
     }
 
     const itemImg = item.find("img")
@@ -150,13 +149,29 @@ jQuery(($) => {
 
   $(document).on("keydown", function (e) {
     if (38 == e.keyCode) {
-      spritesheetMain.css("top", spritesheetMain.position().top - 1)
+      spritesheetMain.css(
+        "top",
+        spritesheetMain.position().top -
+          (e.shiftKey ? (e.ctrlKey ? 20 : 10) : 1)
+      )
     } else if (40 == e.keyCode) {
-      spritesheetMain.css("top", spritesheetMain.position().top + 1)
+      spritesheetMain.css(
+        "top",
+        spritesheetMain.position().top +
+          (e.shiftKey ? (e.ctrlKey ? 20 : 10) : 1)
+      )
     } else if (37 == e.keyCode) {
-      spritesheetMain.css("left", spritesheetMain.position().left - 1)
+      spritesheetMain.css(
+        "left",
+        spritesheetMain.position().left -
+          (e.shiftKey ? (e.ctrlKey ? 20 : 10) : 1)
+      )
     } else if (39 == e.keyCode) {
-      spritesheetMain.css("left", spritesheetMain.position().left + 1)
+      spritesheetMain.css(
+        "left",
+        spritesheetMain.position().left +
+          (e.shiftKey ? (e.ctrlKey ? 20 : 10) : 1)
+      )
     }
 
     spritesheetMain.trigger("maze-moved")
@@ -212,7 +227,9 @@ jQuery(($) => {
 
     const link = document.createElement("a")
     link.download = "icon.png"
-    link.href = canvas.toDataURL()
+    link.href = canvas
+      .toDataURL("image/png")
+      .replace("image/png", "image/octet-stream")
     link.click()
   })
 
@@ -242,8 +259,8 @@ jQuery(($) => {
     const item = $(this).parent(".item")
     const boxW = parseInt(item.data("box-width"))
     const boxH = parseInt(item.data("box-height"))
-    const boxX = item.data("box-x")
-    const boxY = item.data("box-y")
+    const boxX = parseInt(item.data("box-x"))
+    const boxY = parseInt(item.data("box-y"))
     const movedX = parseInt(item.data("moved-x"))
     const movedY = parseInt(item.data("moved-y"))
     alert(
@@ -308,7 +325,7 @@ jQuery(($) => {
 
     $.ajax({
       type: "POST",
-      url: "/map",
+      url: "/editor.save",
       data: {
         frames: jsonTimeline,
         spritesheet: spritesheetFile || null,
@@ -324,7 +341,6 @@ jQuery(($) => {
         button.prop("disabled", false)
 
         if (data.ok) {
-          socket.emit("player-reload")
           alert("Saved!")
         } else {
           alert("Error on save!")
@@ -367,11 +383,14 @@ jQuery(($) => {
   setInterval(function () {
     if (!timeline.is(":visible")) return null
 
+    var count = 0
     timeline.children(".item").each(function () {
       const item = $(this)
       const itemImg = item.find("img")
+      item.find(".number").text(count)
       const ratio = item.outerWidth() / item.data("box-width")
       itemImg.height(item.data("box-height") * ratio)
+      count++
     })
   }, 500)
 })
