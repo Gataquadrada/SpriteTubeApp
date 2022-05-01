@@ -2,7 +2,7 @@
   "name": "spritetube",
   "productName": "spritetube",
   "version": "0.4.0",
-  "description": "My Electron application description",
+  "description": "A sprite based approach for VTube.",
   "main": "src/main.js",
   "scripts": {
     "start": "electron-forge start",
@@ -14,13 +14,14 @@
   "keywords": [],
   "author": {
     "name": "Mazeakin",
-    "email": "rbarretos7@gmail.com"
+    "email": "themazeakin@gmail.com"
   },
   "license": "MIT",
   "config": {
     "forge": {
       "packagerConfig": {
-        "asar": false
+        "asar": false,
+        "icon": "./src/app_assets/icon.ico"
       },
       "makers": [
         {

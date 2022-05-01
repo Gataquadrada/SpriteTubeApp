@@ -67,7 +67,7 @@ const createWindow = () => {
       contextIsolation: false,
       preload: path.join(__dirname, "preload.js"),
     },
-    icon: path.join(__dirname, "app_assets", "icon.png"),
+    icon: path.join(__dirname, "app_assets", "icon.ico"),
     autoHideMenuBar: true,
   })
 
