@@ -1,8 +1,8 @@
-const _VERSION = "0.4.0"
+const _VERSION = "1.0.0"
 var _PORT = 69100
-var _FRAMES = []
+var _FRAMES = {}
 var _FRAME_PROPS = {
-  frameNumber: 0,
+  frameNumber: null,
   frameImg: null,
   isHidden: false,
   isFlipped: false,
@@ -46,7 +46,7 @@ const renderFrame = async (frammeNumber, temp = false) => {
     _FRAME_PROPS.isHidden = false
   }
 
-  if (_FRAME_PROPS.isHidden || !_FRAMES.length) {
+  if (_FRAME_PROPS.isHidden || !Object.keys(_FRAMES).length) {
     return _ICONS.__null
   }
 
@@ -111,7 +111,9 @@ const renderFrame = async (frammeNumber, temp = false) => {
 
       default:
         _FRAME_PROPS.frameNumber = frammeNumber
-        frame = _FRAMES[_FRAME_PROPS.frameNumber]
+        frame =
+          _FRAMES[_FRAME_PROPS.frameNumber] ||
+          _FRAMES[Object.keys(_FRAMES)[_FRAME_PROPS.frameNumber]]
     }
 
     if (
@@ -230,7 +232,7 @@ wss.on("connection", (ws, req) => {
         ? data.payload
         : 0
 
-    console.log(`${new Date()} Message: ${data.action}`)
+    // console.log(`${new Date()} Message: ${data.action}`)
 
     switch (data.action) {
       case "setFrame":
@@ -322,6 +324,7 @@ app.use(express.urlencoded({ extended: true }))
 app.use("/character", express.static("character"))
 app.use("/assets", express.static("assets"))
 app.use("/resources", express.static("resources"))
+app.use("/img", express.static(path.join("resources", "img")))
 
 app.get("/character.json", (req, res) => {
   res.sendFile(path.join(__dirname, "character", "character.json"))
@@ -416,10 +419,12 @@ app.post("/editor.save", (req, res) => {
 
   if (req.body.frames) {
     _FRAMES = req.body.frames
+    console.log(req.body.frames)
+    console.log(JSON.stringify({ frames: _FRAMES }))
 
     fs.writeFile(
       path.join(__dirname, "character", "character.json"),
-      JSON.stringify({ frames: req.body.frames }),
+      JSON.stringify({ frames: _FRAMES }),
       (err) => {
         if (err) {
           console.error(err)
@@ -429,7 +434,9 @@ app.post("/editor.save", (req, res) => {
     )
   }
 
-  _FRAME_PROPS.frameNumber = 0
+  _FRAME_PROPS.frameNumber = null
+
+  renderFrame(0)
 
   wss.broadcast({
     event: "playerReload",

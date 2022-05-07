@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Maze's SpriteTube v0.4.0</title>
+    <title>SpriteTube [Mazeakin v1.0]</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
@@ -10,9 +10,7 @@
     />
     <link href="./index.css" rel="stylesheet" />
     <script>
-      const { app, ipcRenderer, clipboard, shell } = require("electron")
-      const path = require("path")
-      const fs = require("fs")
+      const { ipcRenderer } = require("electron")
       const $ = require("jquery")
 
       var _PORT = ipcRenderer.sendSync("config-port", "")
@@ -28,149 +26,8 @@
 
         iframe.prop("src", _EDITOR_URL)
         iframe.appendTo($("body"))
-
-        $("#input_url").val(_PLAYER_URL)
-
-        $("#input_port").val(_PORT)
-
-        $("#button_editor").click(function () {
-          iframe.prop("src", _EDITOR_URL)
-        })
-
-        $("#button_player").click(function () {
-          iframe.prop("src", _PLAYER_URL)
-        })
-
-        $("#button_url").click(function () {
-          shell.openExternal(_PLAYER_URL)
-        })
-
-        $("#button_copy").click(function () {
-          clipboard.writeText(_PLAYER_URL)
-          alert("Copied!")
-        })
-
-        $("#button_backup_download").click(function () {
-          try {
-            const link = document.createElement("a")
-            link.download = "character.json"
-            link.href = path.join(__dirname, "character", "character.json")
-            link.click()
-
-            link.download = "character.png"
-            link.href = path.join(__dirname, "character", "character.png")
-            link.click()
-          } catch (err) {
-            console.log(err)
-          }
-        })
-
-        $("#button_backup_upload_json").change(function () {
-          try {
-            const fReader = new FileReader()
-            const fInput = $(this)
-
-            fReader.onload = function (e) {
-              file = e.target.result
-              console.log(file)
-              fs.writeFile(
-                path.join(__dirname, "character", "character.json"),
-                file,
-                (err) => {
-                  alert("Uploaded!")
-                  ipcRenderer.sendSync("app-reboot", "")
-                }
-              )
-            }
-
-            fReader.readAsText(fInput[0].files[0])
-          } catch (err) {
-            console.log(err)
-          }
-        })
-
-        $("#button_backup_upload_png").change(function () {
-          try {
-            const fReader = new FileReader()
-            const fInput = $(this)
-
-            fReader.onload = function (e) {
-              file = e.target.result
-              console.log(file)
-              fs.writeFile(
-                path.join(__dirname, "character", "character.png"),
-                file.replace(/^data:image\/png;base64,/, ""),
-                "base64",
-                (err) => {
-                  alert("Uploaded!")
-                  ipcRenderer.sendSync("app-reboot", "")
-                }
-              )
-            }
-
-            fReader.readAsDataURL(fInput[0].files[0])
-          } catch (err) {
-            console.log(err)
-          }
-        })
-
-        $("#button_save").click(function () {
-          if (!fs.existsSync(path.join(__dirname, "config"))) {
-            fs.mkdirSync(path.join(__dirname, "config"))
-          }
-
-          var port = $("#input_port").val().trim() || 3000
-
-          $.ajax({
-            url: `${_PLAYER_URL}port.save`,
-            method: "post",
-            data: {
-              port: port,
-            },
-            success: function (data) {
-              fs.writeFile(
-                path.join(__dirname, "config", "port.txt"),
-                port,
-                (err) => {
-                  alert("Saved!")
-                  ipcRenderer.sendSync("app-reboot", "")
-                }
-              )
-            },
-          })
-        })
       })
     </script>
   </head>
-  <body>
-    <div id="app_toolbar">
-      <button id="button_editor" type="button" class="button left">
-        Editor
-      </button>
-      <input id="input_url" type="text" class="input" readonly />
-      <button id="button_copy" type="button" class="button">Copy</button>
-      <button id="button_url" type="button" class="button">Go</button>
-      <input
-        id="input_port"
-        type="text"
-        class="input"
-        style="width: 70px; text-align: center"
-      />
-      <button id="button_save" type="button" class="button">Save</button>
-      <button id="button_backup_download" type="button" class="button right">
-        Backup
-      </button>
-      <button id="button_backup_download" type="button" class="button">
-        Send JSON
-        <input type="file" id="button_backup_upload_json" accept=".json" />
-      </button>
-      <button id="button_backup_download" type="button" class="button">
-        Send PNG
-        <input type="file" id="button_backup_upload_png" accept=".png" />
-      </button>
-      <button id="button_player" type="button" class="button right">
-        Player
-      </button>
-    </div>
-  </body>
+  <body></body>
 </html>

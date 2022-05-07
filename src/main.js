@@ -68,7 +68,7 @@ const createWindow = () => {
       preload: path.join(__dirname, "preload.js"),
     },
     icon: path.join(__dirname, "app_assets", "icon.ico"),
-    autoHideMenuBar: true,
+    // autoHideMenuBar: true,
   })
 
   mainWindow.on("minimize", function (event) {

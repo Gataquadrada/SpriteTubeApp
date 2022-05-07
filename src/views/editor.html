@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Mapping character - Maze's SpriteTube</title>
+    <title>Character Editor - Maze's SpriteTube</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
@@ -16,83 +16,264 @@
     />
     <link href="resources/editor.css" rel="stylesheet" />
     <script src="resources/editor.js"></script>
+    <script
+      src="https://kit.fontawesome.com/24393e62ca.js"
+      crossorigin="anonymous"
+    ></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
+      href="https://fonts.googleapis.com/css2?family=Lato:wght@100;300;400;700&display=swap"
       rel="stylesheet"
-      href="https://fonts.googleapis.com/icon?family=Material+Icons"
     />
   </head>
   <body class="editing">
-    <div id="container_load">
-      <button type="button">
-        Load image
-        <input type="file" class="action_sheet_upload" accept=".png" />
-      </button>
-    </div>
-    <div id="container_edit">
-      <div id="spritesheet_main" class="spritesheet">
+    <!-- VIEWER -->
+    <div id="viewer__container">
+      <div id="spritesheet_main" class="viewer__spritesheet">
         <img src="./character.png" />
       </div>
-      <div class="overlay"></div>
+      <div class="viewer__backdrop"></div>
       <div id="resize_box">
-        <div id="spritesheet_boxed" class="spritesheet">
+        <div id="spritesheet_boxed" class="viewer__spritesheet">
           <img src="./character.png" />
         </div>
-        <div id="snapshot_box" data-group="snapshot"></div>
-      </div>
-      <div id="timeline" class="open"></div>
-      <div id="controls">
-        <button id="action_preview" type="button" class="button">
-          <i class="material-icons">account_box</i>
-          <span>Preview</span>
-        </button>
-        <button
-          id="action_frame_add"
-          type="button"
-          class="button open"
-          data-group="frame-edit"
-          data-default="1"
-        >
-          <i class="material-icons">camera_alt</i>
-          <span>Add frame</span>
-        </button>
-        <button
-          id="action_frame_update"
-          type="button"
-          class="button"
-          data-group="frame-edit"
-        >
-          <i class="material-icons">camera_alt</i>
-          <span>Update frame</span>
-        </button>
-        <div class="button-group">
-          <button
-            id="action_icon_download"
-            type="button"
-            class="button danger"
-            data-group="snapshot"
-          >
-            <i class="material-icons">file_download</i>
-          </button>
-          <button id="action_frame_icon" type="button" class="button">
-            <i class="material-icons">person_pin</i>
-            <span>Make icon</span>
-          </button>
-        </div>
-        <button id="action_timeline_toggle" type="button" class="button">
-          <i class="material-icons">burst_mode</i> <span>Timeline</span>
-        </button>
-        <button type="button" class="button">
-          <i class="material-icons">cloud_upload</i> <span>Upload</span>
-          <input type="file" class="action_sheet_upload" accept=".png" />
-        </button>
-        <button id="action_timeline_save" type="button" class="button">
-          <i class="material-icons">save</i> <span>Save</span>
-        </button>
-      </div>
-      <div id="preview">
-        <div id="preview_handle"><i class="material-icons">menu</i></div>
-        <iframe id="preview_iframe" src="./" frameborder="0"></iframe>
+        <div id="snapshot_icon_box" class="d-none"></div>
       </div>
     </div>
+    <!-- /VIEWER -->
+
+    <!-- TABS -->
+    <div id="tabs__container">
+      <div id="tabs__titles">
+        <a href="#tabFrames" class="tab__title is-active">Frames</a>
+        <a href="#tabSettings" class="tab__title">Settings</a>
+        <a href="#tabProperties" class="tab__title">Info</a>
+      </div>
+
+      <!-- FRAMES -->
+      <div data-tab="tabFrames" class="tab__content is-active">
+        <div id="frames__container"></div>
+
+        <div class="tab__actions">
+          <a
+            id="editor__action_save_frames"
+            data-tooltip="Backup Image"
+            href="#"
+            ><i class="fa-solid fa-floppy-disk fa-fw"></i> Save frames</a
+          >
+          <a
+            id="editor__action_center_sheet"
+            href="#"
+            data-tooltip="Backup Image"
+            ><i class="fa-solid fa-arrows-to-circle fa-fw"></i> Center sheet</a
+          >
+        </div>
+
+        <div class="tab__footbar">
+          <a
+            id="frame__action_update"
+            data-tooltip="Update Frame"
+            href="#"
+            class="d-none"
+            ><i class="fa-solid fa-check fa-fw"></i
+          ></a>
+          <a id="frame__action_add" data-tooltip="Add Frame" href="#"
+            ><i class="fa-solid fa-square-plus fa-fw"></i
+          ></a>
+          <a id="frame__action_snap" data-tooltip="Snapshot" href="#"
+            ><i class="fa-solid fa-camera fa-fw"></i
+          ></a>
+          <a id="frame__action_icon" data-tooltip="Iconize" href="#"
+            ><i class="fa-solid fa-crop-simple fa-fw"></i
+          ></a>
+          <a
+            id="frame__action_icon_download"
+            data-tooltip="Extract Icon"
+            href="#"
+            class="d-none"
+            ><i class="fa-solid fa-file-export fa-fw"></i
+          ></a>
+          <a
+            id="frame__action_cancel_all"
+            data-tooltip="Cancel"
+            href="#"
+            class="d-none"
+            ><i class="fa-solid fa-xmark fa-fw"></i
+          ></a>
+          <a
+            id="frame__action_delete"
+            class="is-danger d-none"
+            data-tooltip="Delete"
+            href="#"
+            ><i class="fa-solid fa-trash-can fa-fw"></i
+          ></a>
+        </div>
+      </div>
+      <!-- /FRAMES -->
+
+      <!-- SETTINGS -->
+      <div data-tab="tabSettings" class="tab__content">
+        <!-- SOON -->
+        <div class="tab__panel" data-group="framedata">
+          <h6 class="tab__panel_title">Soon</h6>
+          <div class="row">
+            <div class="col">
+              <label
+                >Working on cloud features.<br />
+                Stay tunned!</label
+              >
+            </div>
+            <div class="col">
+              <label
+                >You can use the controls bellow to backup and restore your
+                spritesheet.</label
+              >
+            </div>
+          </div>
+        </div>
+        <!-- /SOON -->
+
+        <div class="tab__actions d-none">
+          <a
+            id="editor__action_save_settings"
+            href="#"
+            data-tooltip="Backup Image"
+            ><i class="fa-solid fa-gear fa-fw"></i> Save settings</a
+          >
+        </div>
+
+        <div class="tab__footbar">
+          <a
+            id="editor__action_download_img"
+            data-tooltip="Get Image"
+            href="#"
+            target="_blank"
+            ><i class="fa-solid fa-download fa-fw"></i
+          ></a>
+          <a
+            id="editor__action_download_json"
+            data-tooltip="Get Frames"
+            href="#"
+            ><i class="fa-solid fa-file-arrow-down fa-fw"></i
+          ></a>
+          <a
+            id="editor__action_upload_img"
+            class="is-danger"
+            data-tooltip="Set Image"
+            href="#"
+            ><i class="fa-solid fa-upload fa-fw"></i
+          ></a>
+          <a
+            id="editor__action_upload_json"
+            class="is-danger"
+            data-tooltip="Set Frames"
+            href="#"
+            ><i class="fa-solid fa-file-arrow-up fa-fw"></i
+          ></a>
+        </div>
+      </div>
+      <!-- /SETTINGS -->
+
+      <!-- PROPERTIES -->
+      <div data-tab="tabProperties" class="tab__content">
+        <!-- PREVIEW -->
+        <div class="tab__panel">
+          <h6 class="tab__panel_title">Preview</h6>
+          <div class="row">
+            <div class="col">
+              <iframe id="preview__iframe" src="./" frameborder="0"></iframe>
+            </div>
+          </div>
+        </div>
+        <!-- /PREVIEW -->
+
+        <!-- NAME & NUMBER -->
+        <div class="tab__panel d-none" data-group="framedata">
+          <h6 class="tab__panel_title">Frame</h6>
+          <div class="row">
+            <div class="col">
+              <div class="input">
+                <label><i class="fa-solid fa-hashtag fa-fw"></i></label>
+                <input id="frame__info_number" value="0" disabled />
+              </div>
+            </div>
+            <div class="col">
+              <div class="input">
+                <label><i class="fa-solid fa-signature fa-fw"></i></label>
+                <input id="frame__info_name" value="0" disabled />
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /NAME & NUMBER -->
+
+        <!-- POSITION AND SIZE -->
+        <div class="tab__panel d-none" data-group="framedata">
+          <h6 class="tab__panel_title">Position & Size</h6>
+          <div class="row">
+            <div class="col col-6">
+              <div class="input">
+                <label><i class="fa-solid fa-left-right fa-fw"></i></label>
+                <input id="frame__info_x" value="0" disabled />
+              </div>
+            </div>
+            <div class="col col-6">
+              <div class="input">
+                <label><i class="fa-solid fa-up-down fa-fw"></i></label>
+                <input id="frame__info_y" value="0" disabled />
+              </div>
+            </div>
+            <div class="col col-6">
+              <div class="input">
+                <label
+                  ><i class="fa-solid fa-ruler-horizontal fa-fw"></i
+                ></label>
+                <input id="frame__info_w" value="0" disabled />
+              </div>
+            </div>
+            <div class="col col-6">
+              <div class="input">
+                <label><i class="fa-solid fa-ruler-vertical fa-fw"></i></label>
+                <input id="frame__info_h" value="0" disabled />
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /POSITION AND SIZE -->
+
+        <!-- SHORTCUTS -->
+        <div class="tab__panel is-bottom">
+          <h6 class="tab__panel_title">Shortcuts</h6>
+          <div class="row">
+            <div class="col">
+              <code
+                ><i class="fa-solid fa-arrows-up-down-left-right fa-fw"></i> to
+                Move</code
+              >
+            </div>
+            <div class="col">
+              <code
+                >[Shift] +
+                <i class="fa-solid fa-arrows-up-down-left-right fa-fw"></i>
+                to Resize</code
+              >
+            </div>
+            <div class="col">
+              <code>Hold [CTRL] to amplify</code>
+            </div>
+            <div class="col">
+              <code
+                ><i class="fa-solid fa-computer-mouse fa-fw"></i> [scroll] to
+                zoom</code
+              >
+            </div>
+          </div>
+        </div>
+        <!-- /SHORTCUTS -->
+      </div>
+      <!-- /PROPERTIES -->
+    </div>
+    <!-- /TABS -->
   </body>
 </html>
