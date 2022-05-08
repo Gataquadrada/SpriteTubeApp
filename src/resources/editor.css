@@ -1,3 +1,8 @@
+:root {
+  --tooltip-background: #ffffff;
+  --tooltip-color: #027fb4;
+}
+
 body,
 html {
   background-color: #535353;
@@ -14,6 +19,30 @@ html {
   box-sizing: border-box;
   outline: 0;
   user-select: none;
+}
+a {
+  color: #28aece;
+  text-decoration: none !important;
+}
+a.bmc-color {
+  color: #fd0 !important;
+}
+
+.badge {
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  border-radius: 2px;
+  display: inline-block;
+  height: 18px;
+  margin-bottom: 1px;
+  margin-right: 2px;
+  position: relative;
+  vertical-align: middle;
+  width: 18px;
+}
+.badge.badge-d20 {
+  background-image: url("/img/d20.svg");
 }
 
 #viewer__container {
@@ -36,7 +65,6 @@ html {
   border: 1px solid #666;
   left: 0;
   cursor: move;
-  padding: 10px;
   position: fixed;
   top: 0;
   z-index: 3;
@@ -229,11 +257,36 @@ html {
   width: 100%;
 }
 
+#party__members {
+  flex-direction: column;
+}
+#party__members code {
+  --tooltip-background: #333333;
+  --tooltip-color: #fedd00;
+  align-items: center;
+  display: inline-flex;
+  margin-bottom: 3px;
+  width: 100%;
+}
+
+#preview__container {
+  position: relative;
+}
 #preview__iframe {
   background: #053938;
   height: 200px;
   padding: 10px;
   width: 100%;
+}
+#preview__action_reload {
+  background: #ecf0f7;
+  border-radius: 3px 0 0 0;
+  bottom: 6px;
+  color: #c8313f;
+  display: block;
+  padding: 3px;
+  position: absolute;
+  right: 6px;
 }
 
 .row {
@@ -244,6 +297,7 @@ html {
 .row > .col {
   align-items: center;
   display: flex;
+  flex-wrap: wrap;
   padding: 6px;
   width: 100%;
 }
@@ -288,14 +342,29 @@ code {
   font-size: 11px;
   padding: 6px;
 }
-code + code {
-  margin-left: 3px;
+code a {
+  color: #fff !important;
+}
+
+.alert {
+  background: #666;
+  border-radius: 3px;
+  color: #dfdfdf;
+  font-size: 13px;
+  padding: 12px;
+  width: 100%;
+}
+.alert a {
+  color: #dfdfdf !important;
+}
+.alert.alert-danger {
+  background: #851829;
 }
 
 [data-tooltip]:hover::before {
   border-style: solid;
   border-width: 5px 5px 0 5px;
-  border-color: #027fb4 transparent transparent transparent;
+  border-color: var(--tooltip-color) transparent transparent transparent;
   bottom: 100%;
   content: "";
   height: 0;
@@ -305,10 +374,10 @@ code + code {
   width: 0;
 }
 [data-tooltip]:hover::after {
-  background-color: #027eb4;
+  background-color: var(--tooltip-color);
   border-radius: 2px;
   bottom: 100%;
-  color: #fff;
+  color: var(--tooltip-background);
   content: attr(data-tooltip);
   font-size: 11px;
   left: 50%;

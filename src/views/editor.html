@@ -8,6 +8,9 @@
       http-equiv="Cache-Control"
       content="no-cache, no-store, must-revalidate"
     />
+    <script>
+      const _PORT = ${port}
+    </script>
     <script src="resources/jquery-3.6.0.min.js"></script>
     <script src="resources/jquery-ui-1.13.1.custom/jquery-ui.min.js"></script>
     <link
@@ -47,8 +50,9 @@
     <div id="tabs__container">
       <div id="tabs__titles">
         <a href="#tabFrames" class="tab__title is-active">Frames</a>
-        <a href="#tabSettings" class="tab__title">Settings</a>
         <a href="#tabProperties" class="tab__title">Info</a>
+        <a href="#tabParty" class="tab__title">Party</a>
+        <a href="#tabSettings" class="tab__title">Settings</a>
       </div>
 
       <!-- FRAMES -->
@@ -112,77 +116,17 @@
       </div>
       <!-- /FRAMES -->
 
-      <!-- SETTINGS -->
-      <div data-tab="tabSettings" class="tab__content">
-        <!-- SOON -->
-        <div class="tab__panel" data-group="framedata">
-          <h6 class="tab__panel_title">Soon</h6>
-          <div class="row">
-            <div class="col">
-              <label
-                >Working on cloud features.<br />
-                Stay tunned!</label
-              >
-            </div>
-            <div class="col">
-              <label
-                >You can use the controls bellow to backup and restore your
-                spritesheet.</label
-              >
-            </div>
-          </div>
-        </div>
-        <!-- /SOON -->
-
-        <div class="tab__actions d-none">
-          <a
-            id="editor__action_save_settings"
-            href="#"
-            data-tooltip="Backup Image"
-            ><i class="fa-solid fa-gear fa-fw"></i> Save settings</a
-          >
-        </div>
-
-        <div class="tab__footbar">
-          <a
-            id="editor__action_download_img"
-            data-tooltip="Get Image"
-            href="#"
-            target="_blank"
-            ><i class="fa-solid fa-download fa-fw"></i
-          ></a>
-          <a
-            id="editor__action_download_json"
-            data-tooltip="Get Frames"
-            href="#"
-            ><i class="fa-solid fa-file-arrow-down fa-fw"></i
-          ></a>
-          <a
-            id="editor__action_upload_img"
-            class="is-danger"
-            data-tooltip="Set Image"
-            href="#"
-            ><i class="fa-solid fa-upload fa-fw"></i
-          ></a>
-          <a
-            id="editor__action_upload_json"
-            class="is-danger"
-            data-tooltip="Set Frames"
-            href="#"
-            ><i class="fa-solid fa-file-arrow-up fa-fw"></i
-          ></a>
-        </div>
-      </div>
-      <!-- /SETTINGS -->
-
       <!-- PROPERTIES -->
       <div data-tab="tabProperties" class="tab__content">
         <!-- PREVIEW -->
         <div class="tab__panel">
           <h6 class="tab__panel_title">Preview</h6>
           <div class="row">
-            <div class="col">
+            <div id="preview__container" class="col">
               <iframe id="preview__iframe" src="./" frameborder="0"></iframe>
+              <a id="preview__action_reload" href="#"
+                ><i class="fa-solid fa-rotate-right fa-fw"></i
+              ></a>
             </div>
           </div>
         </div>
@@ -262,7 +206,7 @@
             <div class="col">
               <code>Hold [CTRL] to amplify</code>
             </div>
-            <div class="col">
+            <div class="col d-none">
               <code
                 ><i class="fa-solid fa-computer-mouse fa-fw"></i> [scroll] to
                 zoom</code
@@ -273,6 +217,148 @@
         <!-- /SHORTCUTS -->
       </div>
       <!-- /PROPERTIES -->
+
+      <!-- PARTY -->
+      <div data-tab="tabParty" class="tab__content">
+        <!-- PARTY -->
+        <div class="tab__panel">
+          <h6 class="tab__panel_title">Party</h6>
+          <div class="row">
+            <div id="party__alerts" class="col"></div>
+            <div class="col">
+              <code
+                >You need to be a
+                <a
+                  href="https://www.buymeacoffee.com/mazeakin"
+                  target="_blank"
+                  class="bmc-color"
+                  ><i class="fa-solid fa-mug-hot fa-fw"></i> member</a
+                >
+                to be able to create a party (servers are expensive).</code
+              >
+            </div>
+            <div class="col">
+              <div class="input">
+                <label><i class="fa-solid fa-envelope fa-fw"></i></label>
+                <input
+                  id="member__email"
+                  value="${party.memberEmail}"
+                  placeholder="Coffee email"
+                  type="email"
+                />
+              </div>
+            </div>
+            <div class="col">
+              <code
+                >You do NOT need a membership to join a party created by someone
+                else.</code
+              >
+            </div>
+            <div class="col">
+              <div class="input">
+                <label><i class="fa-solid fa-hat-wizard fa-fw"></i></label>
+                <input
+                  id="party__nickname"
+                  value="${party.userName}"
+                  placeholder="Nickname"
+                />
+              </div>
+            </div>
+            <div class="col col-6">
+              <div class="input">
+                <label><i class="fa-solid fa-dice-d20 fa-fw"></i></label>
+                <input
+                  id="party__name"
+                  value="${party.partyName}"
+                  placeholder="Party name"
+                />
+              </div>
+            </div>
+            <div class="col col-6">
+              <div class="input">
+                <label><i class="fa-solid fa-key fa-fw"></i></label>
+                <input
+                  id="party__password"
+                  value="${party.partyPassword}"
+                  placeholder="Party pass"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="party__container" class="tab__panel d-none">
+          <h6 class="tab__panel_title">Party members</h6>
+          <div class="row"><div id="party__members" class="col"></div></div>
+        </div>
+        <!-- /PARTY -->
+
+        <div class="tab__actions">
+          <a id="party__action_reload" href="#" data-tooltip="Backup Image"
+            ><i class="fa-solid fa-shield-cat fa-fw"></i> Reconnect</a
+          >
+          <a id="party__action_save" href="#" data-tooltip="Backup Image"
+            ><i class="fa-solid fa-user-shield fa-fw"></i> Save party</a
+          >
+        </div>
+      </div>
+      <!-- /PARTY -->
+
+      <!-- SETTINGS -->
+      <div data-tab="tabSettings" class="tab__content">
+        <!-- PORT -->
+        <div class="tab__panel">
+          <h6 class="tab__panel_title">Port</h6>
+          <div class="row">
+            <div class="col">
+              <div class="input">
+                <label><i class="fa-solid fa-plug fa-fw"></i></label>
+                <input id="system__port" value="${port}" />
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /PORT -->
+
+        <div class="tab__actions">
+          <a
+            id="editor__action_save_settings"
+            href="#"
+            data-tooltip="Backup Image"
+            ><i class="fa-solid fa-gear fa-fw"></i> Save settings</a
+          >
+        </div>
+
+        <div class="tab__footbar">
+          <a
+            id="editor__action_download_img"
+            data-tooltip="Get Image"
+            href="#"
+            target="_blank"
+            ><i class="fa-solid fa-download fa-fw"></i
+          ></a>
+          <a
+            id="editor__action_download_json"
+            data-tooltip="Get Frames"
+            href="#"
+            ><i class="fa-solid fa-file-arrow-down fa-fw"></i
+          ></a>
+          <a
+            id="editor__action_upload_img"
+            class="is-danger"
+            data-tooltip="Set Image"
+            href="#"
+            ><i class="fa-solid fa-upload fa-fw"></i
+          ></a>
+          <a
+            id="editor__action_upload_json"
+            class="is-danger"
+            data-tooltip="Set Frames"
+            href="#"
+            ><i class="fa-solid fa-file-arrow-up fa-fw"></i
+          ></a>
+        </div>
+      </div>
+      <!-- /SETTINGS -->
     </div>
     <!-- /TABS -->
   </body>

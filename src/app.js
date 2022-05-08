@@ -1,5 +1,6 @@
-const _VERSION = "1.0.0"
-var _PORT = 69100
+const _VERSION = "1.1.0"
+var _PORT = 3000
+
 var _FRAMES = {}
 var _FRAME_PROPS = {
   frameNumber: null,
@@ -8,6 +9,16 @@ var _FRAME_PROPS = {
   isFlipped: false,
 }
 var _FRAME_OLD_PROPS = {}
+
+const _PARTYSERVER = "ws://caramel.gg:8880"
+var _PARTYWSS = null
+var _PARTY = {
+  partyName: "",
+  partyPassword: "",
+  userName: "",
+  memberEmail: "",
+}
+
 const _ICONS = {
   __null:
     "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=",
@@ -36,7 +47,91 @@ const fs = require("fs")
 const bodyParser = require("body-parser")
 const path = require("path")
 const { Canvas, loadImage } = require("skia-canvas")
+const { captureRejections } = require("events")
 
+/* 
+ ! INIT
+ */
+
+try {
+  if (!fs.existsSync(path.join(__dirname, "config"))) {
+    fs.mkdirSync(path.join(__dirname, "config"))
+  }
+
+  if (!fs.existsSync(path.join(__dirname, "config", "port.txt"))) {
+    fs.writeFile(
+      path.join(__dirname, "config", "port.txt"),
+      "3000",
+      (err) => {}
+    )
+  }
+
+  const port = fs.readFileSync(
+    path.join(__dirname, "config", "port.txt"),
+    "utf8"
+  )
+  _PORT = port
+} catch (err) {
+  console.error(err)
+}
+
+try {
+  if (!fs.existsSync(path.join(__dirname, "config", "party.json"))) {
+    fs.writeFile(
+      path.join(__dirname, "config", "party.json"),
+      JSON.stringify(_PARTY),
+      (err) => {}
+    )
+  }
+
+  const party = JSON.parse(
+    fs.readFileSync(path.join(__dirname, "config", "party.json"), "utf8")
+  )
+
+  _PARTY = { ..._PARTY, ...party }
+} catch (err) {
+  console.error(err)
+}
+
+try {
+  if (!fs.existsSync(path.join(__dirname, "character"))) {
+    fs.mkdirSync(path.join(__dirname, "character"))
+  }
+
+  if (!fs.existsSync(path.join(__dirname, "character", `character.png`))) {
+    fs.copyFile(
+      path.join(__dirname, "assets", "character-demo.png"),
+      path.join(__dirname, "character", `character.png`),
+      (err) => {}
+    )
+  }
+
+  if (!fs.existsSync(path.join(__dirname, "character", `character.json`))) {
+    fs.copyFile(
+      path.join(__dirname, "assets", "frames-demo.json"),
+      path.join(__dirname, "character", `character.json`),
+      (err) => {}
+    )
+  }
+} catch (err) {
+  console.error(err)
+}
+
+try {
+  _FRAMES =
+    JSON.parse(
+      fs.readFileSync(
+        path.join(__dirname, "character", `character.json`),
+        "utf8"
+      )
+    ).frames || []
+} catch (err) {
+  console.error(err)
+}
+
+/*
+ * LOCAL WSS SERVER
+ */
 const wss = new WebSocket.Server({
   server,
 })
@@ -157,89 +252,48 @@ const renderFrame = async (frammeNumber, temp = false) => {
   return _FRAME_PROPS.frameImg
 }
 
-try {
-  if (!fs.existsSync(path.join(__dirname, "config"))) {
-    fs.mkdirSync(path.join(__dirname, "config"))
-  }
-
-  if (!fs.existsSync(path.join(__dirname, "config", "port.txt"))) {
-    fs.writeFile(
-      path.join(__dirname, "config", "port.txt"),
-      "3000",
-      (err) => {}
-    )
-  }
-
-  const port = fs.readFileSync(
-    path.join(__dirname, "config", "port.txt"),
-    "utf8"
-  )
-  _PORT = port
-} catch (err) {
-  console.error(err)
-}
-
-try {
-  if (!fs.existsSync(path.join(__dirname, "character"))) {
-    fs.mkdirSync(path.join(__dirname, "character"))
-  }
-
-  if (!fs.existsSync(path.join(__dirname, "character", `character.png`))) {
-    fs.copyFile(
-      path.join(__dirname, "assets", "character-demo.png"),
-      path.join(__dirname, "character", `character.png`),
-      (err) => {}
-    )
-  }
-
-  if (!fs.existsSync(path.join(__dirname, "character", `character.json`))) {
-    fs.copyFile(
-      path.join(__dirname, "assets", "frames-demo.json"),
-      path.join(__dirname, "character", `character.json`),
-      (err) => {}
-    )
-  }
-} catch (err) {
-  console.error(err)
-}
-
-try {
-  _FRAMES =
-    JSON.parse(
-      fs.readFileSync(
-        path.join(__dirname, "character", `character.json`),
-        "utf8"
-      )
-    ).frames || []
-} catch (err) {
-  console.error(err)
-}
-
-renderFrame(0)
-
 wss.on("connection", (ws, req) => {
+  if (!_PARTYWSS || 1 !== _PARTYWSS.readyState) {
+    ws.send(
+      JSON.stringify({
+        event: `partyError`,
+        payload: `<i class="fa-solid fa-fan fa-spin fa-spin-reverse"></i> Connecting to party server...`,
+      })
+    )
+  } else {
+    partySend("partyGetMembers", {
+      partyName: _PARTY.partyName,
+    })
+  }
+
   ws.on("message", (data) => {
     data = data.toString()
     data = data.startsWith("{")
       ? JSON.parse(data)
-      : { action: "currentFrame", payload: data }
+      : { event: "currentFrame", payload: data }
 
-    data.action = data.action || "setFrame"
+    data.event = data.event || "setFrame"
     data.payload =
-      "currentFrame" == data.action
+      "currentFrame" == data.event
         ? _FRAME_PROPS.frameNumber
         : data?.payload
         ? data.payload
         : 0
 
-    // console.log(`${new Date()} Message: ${data.action}`)
+    // console.log(`${new Date()} Message: ${data.event}`)
 
-    switch (data.action) {
+    switch (data.event) {
       case "setFrame":
         renderFrame(data.payload).then((b64Image) => {
           wss.broadcast({
             event: "getFrameImg",
             payload: b64Image,
+          })
+
+          partySend("partySetMemberImg", {
+            partyName: _PARTY.partyName,
+            userName: _PARTY.userName,
+            frameImg: b64Image,
           })
         })
         break
@@ -247,7 +301,7 @@ wss.on("connection", (ws, req) => {
       case "getFrameImg":
       case "getCurrentFrameImg":
         var frame =
-          "getCurrentFrameImg" == data.action
+          "getCurrentFrameImg" == data.event
             ? _FRAME_PROPS.frameNumber
             : data.payload || _FRAME_PROPS.frameNumber || 0
 
@@ -296,6 +350,51 @@ wss.on("connection", (ws, req) => {
         })
         break
 
+      /* 
+      ! PARTY STUFF
+      */
+      case "partyReboot":
+        partyJoin()
+        break
+
+      case "partyGetStatus":
+        if (_PARTYWSS) {
+          ws.send(
+            JSON.stringify({
+              event: "partyGetStatus",
+              payload: 200,
+            })
+          )
+        } else {
+          ws.send(
+            JSON.stringify({
+              event: "partyGetStatus",
+              payload: 404,
+            })
+          )
+        }
+        break
+
+      case "partyJoined":
+        wss.broadcast({
+          event: "partyJoined",
+        })
+        break
+
+      case "partyGetMembers":
+        partySend("partyGetMembers", {
+          partyName: _PARTY.partyName,
+        })
+        break
+
+      case "partyGetMemberImg":
+        partySend("partyGetMemberImg", {
+          partyName: data.payload.partyName,
+          userName: data.payload.userName,
+          remoteName: data.payload.remoteName,
+        })
+        break
+
       default:
         break
     }
@@ -309,10 +408,117 @@ wss.on("connection", (ws, req) => {
 wss.broadcast = function broadcast(msg = {}) {
   msg = JSON.stringify(msg)
   wss.clients.forEach(function each(client) {
-    client.send(msg)
+    try {
+      client.send(msg)
+    } catch (e) {}
   })
 }
 
+/*
+ * PARTY SERVER
+ */
+var partyJoinTimer = null
+function partyJoin() {
+  _PARTYWSS = new WebSocket(_PARTYSERVER)
+
+  _PARTYWSS.on("open", function () {
+    try {
+      clearTimeout(partyJoinTimer)
+    } catch (e) {}
+
+    wss.broadcast({
+      event: `partyConnected`,
+    })
+
+    partySend("partyJoin", {
+      memberEmail: _PARTY.memberEmail,
+      partyName: _PARTY.partyName,
+      partyPassword: _PARTY.partyPassword,
+      userName: _PARTY.userName,
+      frameImg: _FRAME_PROPS.frameImg,
+    })
+  })
+
+  _PARTYWSS.on("message", function (data) {
+    const { event, payload } = JSON.parse(data)
+
+    switch (event) {
+      case "partyJoined":
+        wss.broadcast({
+          event: `partyJoined`,
+        })
+        wss.broadcast({
+          event: `TEST`,
+        })
+        break
+
+      case "partyGetMembers":
+        wss.broadcast({ event: "partyGetMembers", payload: payload })
+        break
+
+      case "partyGetMemberImg":
+        wss.broadcast({
+          event: `partyGetMemberImg-${payload.remoteName}`,
+          payload: payload.frameImg,
+        })
+        break
+
+      case "partyError":
+        wss.broadcast({
+          event: `partyError`,
+          payload: `<i class="fa-solid fa-circle-exclamation"></i> ${payload}`,
+        })
+        _PARTYWSS.close()
+        break
+    }
+  })
+
+  _PARTYWSS.on("close", function () {
+    wss.broadcast({
+      event: `partyError`,
+      payload: `<i class="fa-solid fa-fan fa-spin fa-spin-reverse"></i> Reconnecting to party server...`,
+    })
+
+    partyJoinTimer = setTimeout(() => {
+      partyJoin()
+    }, 60000)
+  })
+
+  _PARTYWSS.on("error", function () {
+    _PARTYWSS.close()
+  })
+}
+
+function partySend(event = null, payload = {}) {
+  if (_PARTYWSS && 1 == _PARTYWSS.readyState) {
+    _PARTYWSS.send(
+      JSON.stringify({
+        event: event,
+        payload: payload,
+      })
+    )
+  }
+}
+
+renderFrame(0).then((b64Image) => {
+  if (
+    _PARTY.memberEmail &&
+    _PARTY.partyName &&
+    _PARTY.partyPassword &&
+    _PARTY.userName
+  ) {
+    wss.broadcast({
+      event: `partyError`,
+      payload: `<i class="fa-solid fa-fan fa-spin fa-spin-reverse"></i> Connecting to party server...`,
+    })
+
+    partyJoin()
+  }
+})
+
+/*
+ * LOCAL WEBSERVER
+ */
 app.engine("html", es6Renderer)
 app.set("views", "views")
 app.set("view engine", "html")
@@ -334,6 +540,19 @@ app.get("/character.png", (req, res) => {
   res.sendFile(path.join(__dirname, "character", "character.png"))
 })
 
+app.get("/party-player/:remotename", (req, res) => {
+  res.render(path.join(__dirname, "views", `party-player.html`), {
+    locals: {
+      port: _PORT,
+      party: {
+        partyName: _PARTY.partyName,
+        userName: _PARTY.userName,
+        remoteName: req.params.remotename.toString().toLowerCase(),
+      },
+    },
+  })
+})
+
 app.get(["/", "/player.html"], (req, res) => {
   res.render(path.join(__dirname, "views", `player.html`), {
     locals: {
@@ -346,6 +565,7 @@ app.get("/editor.html", (req, res) => {
   res.render(path.join(__dirname, "views", `editor.html`), {
     locals: {
       port: _PORT,
+      party: _PARTY,
     },
   })
 })
@@ -356,13 +576,55 @@ for "./
 change __dirname + `/
 for `./
 */
-app.post("/port.save", (req, res) => {
-  if (req.body.port) {
+app.post("/config.save", (req, res) => {
+  var reboot = false,
+    partyUpdate = false
+
+  if (req.body.memberEmail && _PARTY.memberEmail !== req.body.memberEmail) {
+    partyUpdate = true
+    _PARTY.memberEmail = req.body.memberEmail
+  }
+
+  if (req.body.partyName && _PARTY.partyName !== req.body.partyName) {
+    partyUpdate = true
+    _PARTY.partyName = req.body.partyName
+  }
+
+  if (
+    req.body.partyPassword &&
+    _PARTY.partyPassword !== req.body.partyPassword
+  ) {
+    partyUpdate = true
+    _PARTY.partyPassword = req.body.partyPassword
+  }
+
+  if (req.body.partyUsername && _PARTY.userName !== req.body.partyUsername) {
+    partyUpdate = true
+    _PARTY.userName = req.body.partyUsername
+  }
+
+  if (partyUpdate) {
+    reboot = true
     fs.writeFile(
-      path.join(__dirname, "config", "port.txt"),
-      req.body.port,
+      path.join(__dirname, "config", "party.json"),
+      JSON.stringify(_PARTY),
       (err) => {}
     )
+  }
+
+  if (req.body.port && parseInt(_PORT) !== parseInt(req.body.port)) {
+    reboot = true
+    _PORT = req.body.port
+    fs.writeFile(path.join(__dirname, "config", "port.txt"), _PORT, (err) => {})
+  }
+
+  if (reboot) {
+    res.json({ ok: true })
+    wss.broadcast({
+      event: "playerReload",
+    })
+    serverStart(_PORT)
+    return true
   }
 
   res.json({ ok: true })
@@ -419,8 +681,6 @@ app.post("/editor.save", (req, res) => {
 
   if (req.body.frames) {
     _FRAMES = req.body.frames
-    console.log(req.body.frames)
-    console.log(JSON.stringify({ frames: _FRAMES }))
 
     fs.writeFile(
       path.join(__dirname, "character", "character.json"),
@@ -445,11 +705,19 @@ app.post("/editor.save", (req, res) => {
   res.json({ ok: true })
 })
 
-server.listen(_PORT, () => {
-  console.log(
-    `\x1b[36mMazeakin\x1b[0m's \x1b[34mSpriteTube\x1b[0m \x1b[31mv${_VERSION}\x1b[0m is running via http://127.0.0.1:${_PORT}`
-  )
-  console.log(
-    `\x1b[33mSupport me via https://www.buymeacoffee.com/mazeakin\x1b[0m`
-  )
-})
+function serverStart(port) {
+  try {
+    server.close()
+  } catch (err) {}
+
+  server.listen(port, () => {
+    console.log(
+      `\x1b[36mMazeakin\x1b[0m's \x1b[34mSpriteTube\x1b[0m \x1b[31mv${_VERSION}\x1b[0m is running via http://127.0.0.1:${port}`
+    )
+    console.log(
+      `\x1b[33mSupport me via https://www.buymeacoffee.com/mazeakin\x1b[0m`
+    )
+  })
+}
+
+serverStart(_PORT)

@@ -1,4 +1,73 @@
 jQuery(($) => {
+  var stSocket
+
+  function makeStSocket() {
+    stSocket = new WebSocket(`ws://127.0.0.1:${_PORT}`)
+
+    stSocket.doSend = function (event = "", payload = "") {
+      stSocket.send(
+        JSON.stringify({
+          event: event,
+          payload: payload,
+        })
+      )
+    }
+
+    stSocket.onopen = function (err) {
+      // stSocket.doSend("partyGetStatus")
+    }
+
+    stSocket.onclose = function () {
+      setTimeout(() => {
+        makeStSocket()
+      }, 1000)
+    }
+
+    stSocket.onerror = function (err) {
+      stSocket.close()
+    }
+
+    stSocket.onmessage = function (data) {
+      const { event, payload } = JSON.parse(data.data)
+
+      switch (event) {
+        case `partyConnected`:
+        case `partyJoined`:
+          $("#party__alerts").addClass("d-none")
+          break
+
+        case "partyGetMembers":
+          $("#party__members").empty()
+
+          if (0 < payload.length) {
+            $("#party__container").removeClass("d-none")
+          } else {
+            $("#party__container").addClass("d-none")
+          }
+
+          $.each(payload, function (i, user) {
+            $("#party__members").append(
+              `<code><a href="/party-player/${user.userName}" target="_blank">${
+                user.is_admin
+                  ? `<span class="badge badge-d20" data-tooltip="Admin"></span>`
+                  : ""
+              } ${user.userName}</a></code>`
+            )
+          })
+          break
+
+        case `partyError`:
+          $("#party__alerts")
+            .empty()
+            .removeClass("d-none")
+            .append(`<div class="alert alert-danger">${payload}</div>`)
+          break
+      }
+    }
+  }
+
+  makeStSocket()
+
   var _spritesheetFile = null
   var _zoomCurrent = 3
   const _zoomLevels = [0.15, 0.25, 0.5, 1, 1.5, 2, 2.15]
@@ -617,6 +686,61 @@ jQuery(($) => {
    */
 
   /*
+   * PARTY TAB
+   */
+  $(document).on("click", "#party__action_reload", function (e) {
+    e.preventDefault()
+    e.stopPropagation()
+
+    try {
+      stSocket.doSend("partyReboot")
+    } catch (e) {}
+  })
+
+  $(document).on("click", "#party__action_save", function (e) {
+    e.preventDefault()
+    e.stopPropagation()
+
+    const button = $(this)
+
+    $.ajax({
+      type: "POST",
+      url: "/config.save",
+      data: {
+        memberEmail: $("#member__email").val(),
+        partyName: $("#party__name").val(),
+        partyPassword: $("#party__password").val(),
+        partyUsername: $("#party__nickname").val(),
+      },
+      dataType: "JSON",
+      complete: function () {},
+      beforeSend: function () {
+        button.prop("disabled", true)
+      },
+      success: function (data) {
+        button.prop("disabled", false)
+
+        if (data.ok) {
+          alert("Saved!")
+          try {
+            stSocket.doSend("partyReboot")
+          } catch (e) {}
+        } else {
+          alert("Error on save!")
+        }
+      },
+      error: function (err) {
+        button.prop("disabled", false)
+        alert("Error!")
+        console.log(err)
+      },
+    })
+  })
+  /*
+   * /PARTY TAB
+   */
+
+  /*
    * SETTINGS TAB
    */
   $(document).on("click", "#editor__action_download_img", function (e) {
@@ -739,8 +863,61 @@ jQuery(($) => {
       alert("Your browser doesn't support offline file manipulation...")
     }
   })
+
+  $(document).on("click", "#editor__action_save_settings", function (e) {
+    e.preventDefault()
+    e.stopPropagation()
+
+    const button = $(this)
+
+    $.ajax({
+      type: "POST",
+      url: "/config.save",
+      data: {
+        port: $("#system__port").val(),
+      },
+      dataType: "JSON",
+      complete: function () {},
+      beforeSend: function () {
+        button.prop("disabled", true)
+      },
+      success: function (data) {
+        button.prop("disabled", false)
+
+        if (data.ok) {
+          alert("Saved!")
+
+          if (parseInt($("#system__port").val()) !== parseInt(_PORT)) {
+            window.location.href = `http://127.0.0.1:${$(
+              "#system__port"
+            ).val()}/editor.html`
+          }
+        } else {
+          alert("Error on save!")
+        }
+      },
+      error: function (err) {
+        button.prop("disabled", false)
+        alert("Error!")
+        console.log(err)
+      },
+    })
+  })
   /*
    * /SETTINGS TAB
+   */
+
+  /*
+   * INFO TAB
+   */
+  $(document).on("click", "#preview__action_reload", function (e) {
+    e.preventDefault()
+    e.stopPropagation()
+
+    $("#preview__iframe")[0].contentDocument.location.reload(true)
+  })
+  /*
+   * /INFO TAB
    */
 
   /*
