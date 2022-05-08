@@ -1,4 +1,4 @@
-const _VERSION = "1.1.0"
+const _VERSION = "1.1.1"
 var _PORT = 3000
 
 var _FRAMES = {}
@@ -136,8 +136,8 @@ const wss = new WebSocket.Server({
   server,
 })
 
-const renderFrame = async (frammeNumber, temp = false) => {
-  if (frammeNumber !== _FRAME_PROPS.frameNumber) {
+const renderFrame = async (frameNumber, temp = false) => {
+  if (frameNumber !== _FRAME_PROPS.frameNumber) {
     _FRAME_PROPS.isHidden = false
   }
 
@@ -148,9 +148,9 @@ const renderFrame = async (frammeNumber, temp = false) => {
   var frame = null
 
   if (temp) {
-    frame = _FRAMES[frammeNumber]
+    frame = _FRAMES[frameNumber]
   } else {
-    switch (frammeNumber) {
+    switch (frameNumber) {
       case "none":
       case "hide":
         _FRAME_PROPS.isHidden = true
@@ -161,18 +161,19 @@ const renderFrame = async (frammeNumber, temp = false) => {
         if (_FRAME_PROPS.frameImg) {
           return _FRAME_PROPS.frameImg
         } else {
-          _FRAME_PROPS.frameNumber = 0
+          _FRAME_PROPS.frameNumber = Object.keys(_FRAMES)[0]
           frame = _FRAMES[_FRAME_PROPS.frameNumber]
         }
         break
 
       case "first":
-        _FRAME_PROPS.frameNumber = 0
+        _FRAME_PROPS.frameNumber = Object.keys(_FRAMES)[0]
         frame = _FRAMES[_FRAME_PROPS.frameNumber]
         break
 
       case "last":
-        _FRAME_PROPS.frameNumber = Object.keys(_FRAMES).length - 1
+        _FRAME_PROPS.frameNumber =
+          Object.keys(_FRAMES)[Object.keys(_FRAMES).length - 1]
         frame = _FRAMES[_FRAME_PROPS.frameNumber]
         break
 
@@ -205,7 +206,11 @@ const renderFrame = async (frammeNumber, temp = false) => {
         break
 
       default:
-        _FRAME_PROPS.frameNumber = frammeNumber
+        _FRAME_PROPS.frameNumber = _FRAMES[frameNumber]
+          ? frameNumber
+          : Object.keys(_FRAMES)[frameNumber]
+          ? Object.keys(_FRAMES)[frameNumber]
+          : Object.keys(_FRAMES)[0]
         frame =
           _FRAMES[_FRAME_PROPS.frameNumber] ||
           _FRAMES[Object.keys(_FRAMES)[_FRAME_PROPS.frameNumber]]
