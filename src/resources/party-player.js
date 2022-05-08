@@ -41,6 +41,7 @@ jQuery(($) => {
           $("#character").css({
             "background-image": `url("${payload}")`,
           })
+          break
 
         case `partyError`:
           console.log(payload)
