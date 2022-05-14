@@ -9,10 +9,11 @@
       content="no-cache, no-store, must-revalidate"
     />
     <script>
-      const _PORT = ${port}
+      const _PORT = parseInt("${port}")
     </script>
     <script src="resources/jquery-3.6.0.min.js"></script>
     <script src="resources/jquery-ui-1.13.1.custom/jquery-ui.min.js"></script>
+    <script src="resources/jquery.mousewheel.min.js"></script>
     <link
       rel="stylesheet"
       href="resources/jquery-ui-1.13.1.custom/jquery-ui.min.css"
@@ -30,7 +31,7 @@
       rel="stylesheet"
     />
   </head>
-  <body class="editing">
+  <body>
     <!-- VIEWER -->
     <div id="viewer__container">
       <div id="spritesheet_main" class="viewer__spritesheet">

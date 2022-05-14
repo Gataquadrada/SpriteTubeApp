@@ -1,4 +1,4 @@
-const _VERSION = "1.1.1"
+const _VERSION = "1.1.2"
 var _PORT = 3000
 
 var _FRAMES = {}

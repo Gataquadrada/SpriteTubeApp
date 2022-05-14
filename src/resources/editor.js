@@ -1,6 +1,31 @@
 jQuery(($) => {
-  var stSocket
+  var _spritesheetFile = null
+  // var _zoomCurrent = 3
+  var stSocket = null
+  // const _zoomLevels = [0.15, 0.25, 0.5, 1, 1.5, 2, 2.15]
+  const _actionsDone = []
+  const spritesheetMain = $("#spritesheet_main")
+  const spritesheetBoxed = $("#spritesheet_boxed")
+  const resizeBox = $("#resize_box")
+  const snapshotIconBox = $("#snapshot_icon_box")
+  const framesContainer = $("#frames__container")
+  const tabsContainer = $("#tabs__container")
+  const tabsTitles = $("#tabs__titles")
 
+  /*
+  $(document).on('mousewheel', function(e) {
+    console.log(e.deltaX, e.deltaY, e.deltaFactor);
+    if( 0 < e.deltaY ){
+      // UP
+    }else{
+      // DOWN
+    }
+  });
+  */
+
+  /*
+   * ST SOCKET
+   */
   function makeStSocket() {
     stSocket = new WebSocket(`ws://127.0.0.1:${_PORT}`)
 
@@ -67,18 +92,9 @@ jQuery(($) => {
   }
 
   makeStSocket()
-
-  var _spritesheetFile = null
-  var _zoomCurrent = 3
-  const _zoomLevels = [0.15, 0.25, 0.5, 1, 1.5, 2, 2.15]
-  const _actionsDone = []
-  const spritesheetMain = $("#spritesheet_main")
-  const spritesheetBoxed = $("#spritesheet_boxed")
-  const resizeBox = $("#resize_box")
-  const snapshotIconBox = $("#snapshot_icon_box")
-  const framesContainer = $("#frames__container")
-  const tabsContainer = $("#tabs__container")
-  const tabsTitles = $("#tabs__titles")
+  /*
+   * /ST SOCKET
+   */
 
   /*
    * TABS STUFF
@@ -661,6 +677,7 @@ jQuery(($) => {
 
         if (data.ok) {
           alert("Saved!")
+          window.location.href = `http://127.0.0.1:${_PORT}/editor.html`
         } else {
           alert("Error on save!")
         }
@@ -813,6 +830,7 @@ jQuery(($) => {
           resizeBox.mazeResize("100px", "100px")
           spritesheetMain.mazeReposition(0, 0)
           $(document).trigger("maze-editor-reset")
+          framesContainer.scrollTop(0).find(".frame:eq(0)").trigger("click")
           tabsContainer.mazeSetTab("tabFrames")
         }
 
@@ -852,6 +870,7 @@ jQuery(($) => {
             resizeBox.mazeResize(frameW, frameH)
             spritesheetMain.mazeReposition(framePX, framePY)
             framesContainer.mazeFrameAdd({ name: frame.name })
+            tabsContainer.mazeSetTab("tabFrames")
           })
         }
 
@@ -968,6 +987,7 @@ jQuery(($) => {
             spritesheetMain.mazeReposition(framePX, framePY)
             framesContainer.mazeFrameAdd({ name: frame.name })
           })
+          framesContainer.scrollTop(0).find(".frame:eq(0)").trigger("click")
         },
         error: function (err) {},
       })
