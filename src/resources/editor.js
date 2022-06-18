@@ -71,8 +71,12 @@ jQuery(($) => {
           }
 
           $.each(payload, function (i, user) {
+            if (!user.userName.trim()) return null
+
             $("#party__members").append(
-              `<code><a href="/party-player/${user.userName}" target="_blank">${
+              `<code><a href="http://127.0.0.1:${_PORT}/party-player/${
+                user.userName
+              }" target="_blank">${
                 user.is_admin
                   ? `<span class="badge badge-d20" data-tooltip="Admin"></span>`
                   : ""
@@ -703,8 +707,39 @@ jQuery(($) => {
    */
 
   /*
+   * INFO TAB
+   */
+  $(document).on("click", "#player__url", function (e) {
+    e.preventDefault()
+    e.stopPropagation()
+
+    const input = $(this)[0]
+    input.select()
+    input.setSelectionRange(0, 99999)
+    navigator.clipboard.writeText(input.value)
+
+    setTimeout(() => {
+      alert("URL copied! Now, use it as OBS Browser Source.")
+    }, 1000)
+  })
+  /*
+   * /INFO TAB
+   */
+
+  /*
    * PARTY TAB
    */
+  $(document).on("click", "#party__members a", function (e) {
+    e.preventDefault()
+    e.stopPropagation()
+    const url = $(this).attr("href")
+    navigator.clipboard.writeText(url)
+
+    setTimeout(() => {
+      alert("URL copied! Now, use it as OBS Browser Source.")
+    }, 1000)
+  })
+
   $(document).on("click", "#party__action_reload", function (e) {
     e.preventDefault()
     e.stopPropagation()

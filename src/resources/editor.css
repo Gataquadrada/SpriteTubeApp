@@ -289,6 +289,10 @@ a.bmc-color {
   right: 6px;
 }
 
+#player__url {
+  cursor: pointer;
+}
+
 .row {
   display: flex;
   flex-wrap: wrap;

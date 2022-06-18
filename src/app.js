@@ -1,4 +1,4 @@
-const _VERSION = "1.1.2"
+const _VERSION = "1.1.3"
 var _PORT = 3000
 
 var _FRAMES = {}
@@ -435,13 +435,15 @@ function partyJoin() {
       event: `partyConnected`,
     })
 
-    partySend("partyJoin", {
-      memberEmail: _PARTY.memberEmail,
-      partyName: _PARTY.partyName,
-      partyPassword: _PARTY.partyPassword,
-      userName: _PARTY.userName,
-      frameImg: _FRAME_PROPS.frameImg,
-    })
+    if (_PARTY.partyName && _PARTY.partyPassword && _PARTY.userName) {
+      partySend("partyJoin", {
+        memberEmail: _PARTY.memberEmail,
+        partyName: _PARTY.partyName,
+        partyPassword: _PARTY.partyPassword,
+        userName: _PARTY.userName,
+        frameImg: _FRAME_PROPS.frameImg,
+      })
+    }
   })
 
   _PARTYWSS.on("message", function (data) {

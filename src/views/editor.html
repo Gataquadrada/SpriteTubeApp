@@ -133,6 +133,30 @@
         </div>
         <!-- /PREVIEW -->
 
+        <!-- PLAYER -->
+        <div class="tab__panel" data-group="playerurl">
+          <h6 class="tab__panel_title">Player URL</h6>
+          <div class="row">
+            <div class="col">
+              <code
+                >Click the address to copy. Then, paste it as Browser Source on
+                your OBS.</code
+              >
+            </div>
+            <div class="col">
+              <div class="input">
+                <label><i class="fa-solid fa-link fa-fw"></i></label>
+                <input
+                  id="player__url"
+                  value="http://127.0.0.1:${port}"
+                  readonly
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /PLAYER -->
+
         <!-- NAME & NUMBER -->
         <div class="tab__panel d-none" data-group="framedata">
           <h6 class="tab__panel_title">Frame</h6>
@@ -289,7 +313,12 @@
         </div>
         <div id="party__container" class="tab__panel d-none">
           <h6 class="tab__panel_title">Party members</h6>
-          <div class="row"><div id="party__members" class="col"></div></div>
+          <div class="row">
+            <div class="col">
+              <code>Click users names to copy their player address.</code>
+            </div>
+            <div id="party__members" class="col"></div>
+          </div>
         </div>
         <!-- /PARTY -->
 

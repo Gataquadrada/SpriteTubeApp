@@ -22,6 +22,7 @@
         const iframe = $("<iframe/>", {
           id: "app_iframe",
           frameborder: "0",
+          allow: "clipboard-read; clipboard-write",
         })
 
         iframe.prop("src", _EDITOR_URL)
